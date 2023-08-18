@@ -1,0 +1,8 @@
+{% for category in categories %}
+
+
+<li><a class="dropdown-item" href="{% url 'category_detail' category.slug %}">{{category.title}}</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+{% endfor %}

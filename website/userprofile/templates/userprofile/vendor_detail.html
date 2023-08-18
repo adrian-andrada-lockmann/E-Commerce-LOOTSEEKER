@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+{% block title %} {% firstof user.get_full_name user.username %}{% endblock %}
+{% block content %}
+<h2 class="text-2xl">User {% firstof user.get_full_name user.username %} has published the following products:</h2>
+
+
+<div class="contenedor">
+
+    <div class="grid-layout">
+        {% for product in products %}
+        <div>
+                <div class="productCard ">
+                    <ul class=" container-fluid card">
+                            <div class="productCategory">
+                                <a href="{% url 'category_detail' product.category.slug %}">{{ product.category }}</a>
+                            </div>
+                            {% if product.image %}
+                            <div class="img-div">
+                                <img class="img-fluid rounded container-fluid" id="product-img"
+                                        src="{{ product.image.url }}" alt="Image of {{ product.title }}">
+                            </div>
+                            {% endif %}
+                            <br>
+                            <div>
+                                <a href="{% url 'product_detail' product.category.slug product.slug %}">
+                                <h6>{{ product.title }}</h6>
+                            </a>
+                            </div>
+                            <p class="price">${{ product.get_display_price }}</p>
+                            <a href="#" class="buy-now-button">Buy Now</a>
+                            <a href="{% url 'add_to_cart' product.id %}" class="add-to-cart-button">Add to Cart</a>
+                    </ul>
+                </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

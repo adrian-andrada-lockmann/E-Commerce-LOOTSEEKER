@@ -1,0 +1,35 @@
+{% extends 'core/base.html'%}{% block title %}Search{% endblock %}
+
+{% block content%}
+
+
+<h2>Search results for {{ query }}:</h2>
+{% if products %}
+<div class="row">
+    {% for product in products %}
+    <div class="col-3">
+      <div class="productCard">
+        <ul class="card">{{ product.category }}
+            {% if product.image %}
+            <div>
+                <img id="product-img" src="{{ product.image.url }}" alt="Image of {{ product.title }}">
+            </div>
+            {% endif %}
+          <a href="{% url 'product_detail' product.category.slug product.slug %}">
+          <h5>{{ product.title }}</h5>
+        </a>
+          <p class="price">${{ product.get_display_price }}</p>
+          <p class="owner">Published by: <a href="{% url 'vendor_detail' product.user.id %}"> {% firstof product.user.get_full_name product.user.username %}</a></p>
+          <a href="#" class="buy-now-button">Buy Now</a>
+          <a href="{% url 'add_to_cart' product.id %}" class="add-to-cart-button">Add to cart</a>
+        </ul>
+      </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p style="text-align: center;">Nope, there are no results for {{ query }}</p>
+<div class="container"><img class="notfoundimg" src="/media/notfound.png"></div>
+{% endif %}
+
+{% endblock %}

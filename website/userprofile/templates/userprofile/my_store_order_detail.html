@@ -1,0 +1,29 @@
+{% extends 'core/base.html'%}{% block title %}My Store{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">Order detail N° {{ order.id }}</h2>
+<h1 class="mb-6">My products in this order</h1>
+
+<table class="table table table-hover table-success container">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Quantity</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in order.items.all %}
+    {%if item.product.user == request.user %}
+        <tr>
+            <td>{{ item.product.title }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ item.get_display_price }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}

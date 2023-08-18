@@ -1,0 +1,196 @@
+{% extends 'core/base.html'%}{% block title %}Home{% endblock %}
+
+
+{% block content%}
+
+<body>
+      <div id="login-info">
+            {% if user.is_authenticated %}
+            Hi {{ user.username }}!
+            {% else %}
+            <p style="text-align: center; font-size: 22px; margin-top: 5px;">Welcome to LOOTSEEKER!</p>
+            <p style="text-align: center; font-size: 15px;">you are not logged in
+                  <a aria-current="page" href="\login">log in</a> or <a aria-current="page" href="\signup">register
+                        now</a>.
+            </p>
+            {% endif %}
+      </div>
+      <hr class="container">
+      <div id="sliderfront">
+            <div class="slider-container">
+            <div class="item-slide">
+                  <img src="media/distribucion-mercancias-e-commerce.jpg">
+                  <img src="media/e-commerce1.jpg">
+                  <img src="media/quick_commerce.jpg">
+                  <img src="media/home-delivery.jpg">
+                  <div class="slider-buttons-container">
+                        <button id="prevBtn" class="btn btn-outline-light btn-sm btnPrev"><<<</button>
+                        <button id="nextBtn" class="btn btn-outline-light btn-sm btnNext">>>></button>
+                  </div>
+            </div>
+            </div>
+      </div>
+      <hr class="container">
+<script>
+const images = document.querySelectorAll('#sliderfront .item-slide img');
+let i = 0;
+
+images.forEach((image, index) => {
+if (i === index) {
+image.style.opacity = 1;
+} else {
+image.style.opacity = 0;
+}
+});
+
+function showImage(index) {
+images.forEach((image, idx) => {
+if (idx === index) {
+image.style.opacity = 1;
+} else {
+image.style.opacity = 0;
+}
+});
+}
+
+function nextImage() {
+i = (i + 1) % images.length;
+showImage(i);
+}
+
+function prevImage() {
+i = (i - 1 + images.length) % images.length;
+showImage(i);
+}
+
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+prevBtn.addEventListener('click', prevImage);
+nextBtn.addEventListener('click', nextImage);
+
+function autoChangeImage() {
+nextImage();
+setTimeout(autoChangeImage, 3000);
+}
+setTimeout(autoChangeImage, 3000);
+</script>
+
+      <div class="contenedor">
+            <div class="grid-layout">
+                  {% for product in products %}
+                  <div>
+                        <div class="productCard">
+                              <ul class="container-fluid card">
+                                    <div class="productCategory">
+                                          <a href="{% url 'category_detail' product.category.slug %}">{{ product.category }}</a>
+                                    </div>
+                                    {% if product.image %}
+                                    <div class="img-div">
+                                          <a href="{% url 'product_detail' product.category.slug product.slug %}">
+                                                <img class="img-fluid rounded container-fluid" id="product-img"
+                                                      src="{{ product.image.url }}" alt="Image of {{ product.title }}">
+                                          </a>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                          <a href="{% url 'product_detail' product.category.slug product.slug %}">
+                                                <h6>{{ product.title }}</h6>
+                                          </a>
+                                    </div>
+                                    <p class="price">${{ product.get_display_price }}</p>
+                                    <p class="owner">Published by: <a href="{% url 'vendor_detail' product.user.id %}">
+                                                {% firstof product.user.get_full_name product.user.username %}</a></p>
+                                    <a href="{% url 'add_to_cart' product.id %}"class="btn btn-success buy-now-button">Buy now</a>
+                                    <a href="{% url 'add_to_cart' product.id %}"class="btn btn-success add-to-cart-button">Add to cart</a>
+                              </ul>
+                        </div>
+                  </div>
+                  {% endfor %}
+            </div>
+      </div>
+      <hr class="container">
+      <h2>Top Seller Books</h2>
+      <div class="container slider" id="sliderLibros">
+            <div class="slide" id="slide-1"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-2"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-3"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-4"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-5"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-6"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-7"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-8"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-9"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-10"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+      </div>
+      <h2>Popular products</h2>
+      <div class="container slider" id="sliderLibros">
+            <div class="slide" id="slide-1"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-2"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-3"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-4"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-5"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-6"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-7"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-8"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-9"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+            <div class="slide" id="slide-10"><a href=#><img
+                              src="https://plus.unsplash.com/premium_photo-1677151193419-9be7a26c02cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"></a>
+            </div>
+      </div>
+      <div class="container-fluid d-flex justify-content-center">
+            <button style="text-decoration:none;" class="btn btn-success mx-sm-1 mt-3 text-light" id="back-to-top">Back to top</button>
+      </div>
+      <script>
+            // JS code to handle the "Back to top" button functionality //
+            document.addEventListener('DOMContentLoaded', function() {
+                const backToTopButton = document.getElementById('back-to-top');
+                function scrollToTop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+                backToTopButton.addEventListener('click', scrollToTop);
+            });
+      </script>
+</body>
+{% endblock %}

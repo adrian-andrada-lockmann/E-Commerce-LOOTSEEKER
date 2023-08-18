@@ -1,0 +1,23 @@
+{% extends 'core/base.html'%}{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+<hr class="container">
+<div class="container">
+<div class="form-group">
+<form method="post" action="." enctype="multipart/form-data">
+    <table class="form-class">
+    {% csrf_token %}
+
+    {{form.as_table}}
+</table>
+    <button class="btn btn-success" id="add-product">Submit</button>
+</form>
+
+{% if title == 'Edit product'%}
+    <button href="{% url 'delete_product' product.id %}" class="btn btn-alert" >Delete product</button>
+{% endif %}
+</div>
+</div>
+
+{% endblock %}

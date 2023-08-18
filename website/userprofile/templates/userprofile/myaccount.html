@@ -1,0 +1,11 @@
+{% extends 'core/base.html'%}{% block title %}My Account{% endblock %}
+
+{% block content %}
+{% if request.user.is_authenticated %}
+<h1>My account</h1>
+<hr class="container">
+<div>
+<a href="{% url 'logout' %}" id="logout" class="btn btn-danger">Log out</a>
+</div>
+{% endif %}
+{% endblock %}
