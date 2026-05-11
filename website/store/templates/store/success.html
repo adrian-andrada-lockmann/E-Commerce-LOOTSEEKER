@@ -1,8 +1,14 @@
-{% extends 'core/base.html'%}{% block title %}Success{% endblock %}
+{% extends 'core/base.html' %}
+{% block title %}Success{% endblock %}
 
-{% block content%}
-
-
-<h2>Success</h2>
-
+{% block content %}
+<section class="section">
+    <div class="section-shell">
+        <div class="empty-state success-state">
+            <h1>Order received.</h1>
+            <p>Your Lootseeker checkout flow completed successfully.</p>
+            <a class="button" href="{% url 'frontpage' %}">Back to marketplace</a>
+        </div>
+    </div>
+</section>
 {% endblock %}

@@ -1,101 +1,101 @@
-{% extends 'core/base.html'%}
+{% extends 'core/base.html' %}
 {% block title %}Checkout{% endblock %}
 
-{% block content%}
-<h1>Checkout</h1>
+{% block content %}
+<section class="section">
+    <div class="section-shell checkout-layout">
+        <div class="section-heading">
+            <p class="eyebrow">Checkout</p>
+            <h1>Complete your order</h1>
+            <p>Use any shipping details for the local demo. If Stripe keys are missing, the app completes a safe simulated checkout.</p>
+        </div>
 
+        <aside class="cart-summary checkout-summary">
+            <p class="eyebrow">Total</p>
+            <div>
+                <span>Cart total</span>
+                <strong>${{ cart.get_total_cost }}</strong>
+            </div>
+        </aside>
 
-<div class="checkoutForm">
-<strong class="TotalCost">Total cost: ${{ cart.get_total_cost }}</strong>
-{{ form.as_p}}
-<div id="errors"></div>
-
-<button class="btn btn-success" id="add-product" onclick="buy(event)">Checkout</button>
-</div>
+        <form class="checkout-form" id="checkout-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div id="errors" role="alert"></div>
+            <button class="button" type="submit">Place order</button>
+        </form>
+    </div>
+</section>
 {% endblock %}
 
 {% block scripts %}
-<script type="application/javascript" src="https://js.stripe.com/v3/"></script>
+{% if pub_key %}
+    <script src="https://js.stripe.com/v3/"></script>
+{% endif %}
 <script>
-    function validate(first_name, last_name, address, zipcode, city) {
-        let errors = [];
-        if (first_name == '') {
-            errors.push('The first name is missing');
-        }
-        if (last_name == '') {
-            errors.push('The last name is missing');
-        }
-        if (address == '') {
-            errors.push('Address is missing');
-        }
-        if (zipcode == '') {
-            errors.push('Zipcode is missing');
-        }
-        if (city == '') {
-            errors.push('City name is missing');
-        }
+    const checkoutForm = document.getElementById('checkout-form');
+    const errorBox = document.getElementById('errors');
 
-        let html = ''
+    function validateCheckout(fields) {
+        const errors = [];
 
-        for(let i = 0; i < errors.length; i++) {
-            html += errors[i] + '<br>';
+        Object.entries(fields).forEach(([label, value]) => {
+            if (!value.trim()) {
+                errors.push(`${label} is required`);
+            }
+        });
 
-        }
-
-        document.getElementById('errors').innerHTML = html;
-
-        if (errors.length) {
-            return false
-        } else {
-            return true;
-        }
+        errorBox.innerHTML = errors.join('<br>');
+        return errors.length === 0;
     }
 
-    function buy(event) {
+    checkoutForm.addEventListener('submit', function (event) {
         event.preventDefault();
 
-        const first_name = document.getElementById('id_first_name').value
-        const last_name = document.getElementById('id_last_name').value
-        const address = document.getElementById('id_address').value
-        const zipcode = document.getElementById('id_zipcode').value
-        const city = document.getElementById('id_city').value
-        if (validate (first_name, last_name,address,zipcode,city)) {
+        const fields = {
+            'First name': document.getElementById('id_first_name').value,
+            'Last name': document.getElementById('id_last_name').value,
+            'Address': document.getElementById('id_address').value,
+            'Zipcode': document.getElementById('id_zipcode').value,
+            'City': document.getElementById('id_city').value,
+        };
 
-            let data = {
-                'first_name': first_name,
-                'last_name': last_name,
-                'address': address,
-                'zipcode': zipcode,
-                'city': city,
-            }
-
-            let stripe = Stripe('{{ pub_key }}');
-
-            fetch('/cart/checkout/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify(data)
-            })
-                .then(function (response) {
-                    return response.json()
-                })
-                .then(function (session) {
-                    return stripe.redirectToCheckout({ sessionId: session.session.id })
-                })
-                .then(function (result) {
-                    if (result.error) {
-                        alert(result.error.message)
-                    }
-                })
-                .catch(function (error) {
-                    alert(error)
-                })
-            return false;
+        if (!validateCheckout(fields)) {
+            return;
         }
-    }
+
+        fetch('{% url "checkout" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                first_name: fields['First name'],
+                last_name: fields['Last name'],
+                address: fields.Address,
+                zipcode: fields.Zipcode,
+                city: fields.City
+            })
+        })
+            .then((response) => response.json())
+            .then((payload) => {
+                if (payload.redirect_url) {
+                    window.location.assign(payload.redirect_url);
+                    return;
+                }
+
+                if (payload.session_id && '{{ pub_key }}') {
+                    const stripe = Stripe('{{ pub_key }}');
+                    return stripe.redirectToCheckout({ sessionId: payload.session_id });
+                }
+
+                throw new Error('Checkout could not be completed.');
+            })
+            .catch((error) => {
+                errorBox.textContent = error.message;
+            });
+    });
 </script>
 {% endblock %}

@@ -1,23 +1,24 @@
-{% extends 'core/base.html'%}{% block title %}{{ title }}{% endblock %}
+{% extends 'core/base.html' %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<h2>{{ title }}</h2>
-<hr class="container">
-<div class="container">
-<div class="form-group">
-<form method="post" action="." enctype="multipart/form-data">
-    <table class="form-class">
-    {% csrf_token %}
+<section class="section">
+    <div class="auth-shell">
+        <div class="section-heading">
+            <p class="eyebrow">Seller tools</p>
+            <h1>{{ title }}</h1>
+            <p>Keep product data clear so listings are easier to browse, search, and buy.</p>
+        </div>
 
-    {{form.as_table}}
-</table>
-    <button class="btn btn-success" id="add-product">Submit</button>
-</form>
+        <form method="post" action="." enctype="multipart/form-data" class="form-card">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="button" type="submit">Save product</button>
+        </form>
 
-{% if title == 'Edit product'%}
-    <button href="{% url 'delete_product' product.id %}" class="btn btn-alert" >Delete product</button>
-{% endif %}
-</div>
-</div>
-
+        {% if title == 'Edit product' %}
+            <a href="{% url 'delete_product' product.id %}" class="button button-danger">Delete product</a>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

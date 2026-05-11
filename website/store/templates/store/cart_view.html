@@ -1,83 +1,67 @@
-{% extends 'core/base.html'%}
+{% extends 'core/base.html' %}
 {% block title %}Cart{% endblock %}
 
-{% block content%}
-
-
-{% if cart|length %}
-<h1>Your cart</h1>
-{% for item in cart %}
-<div class="container py-5 mb-6 d-flex items-center">
-    <div>
-        <img src="{{ item.product.get_thumbnail }}" class="d-inline-flex align-items-center">
-    </div>
-    <div class="p-4">
-            <h4 class="text-2xl">{{ item.product.title }}</h4><br>
-            <p class="text-sm text-black">Price: ${{ item.product.get_display_price }}</p>
-            <b>Quantity:</b><br>
-        <div class="mt-4">
-            <a href="{% url 'change_quantity' item.product.id %}?action=decrease" class="p-1 rounded-xl">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-                    <path
-                        d="M13.25 1c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 13.25 15H2.75A1.75 1.75 0 0 1 1 13.25V2.75C1 1.784 1.784 1 2.75 1ZM2.75 2.5a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V2.75a.25.25 0 0 0-.25-.25Zm8.5 6.25h-6.5a.75.75 0 0 1 0-1.5h6.5a.75.75 0 0 1 0 1.5Z">
-                    </path>
-                </svg></a>
-            {{ item.quantity }}
-            <a href="{% url 'change_quantity' item.product.id %}?action=increase" class="p-2 rounded-xl">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-                    <path
-                        d="M2.75 1h10.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 13.25 15H2.75A1.75 1.75 0 0 1 1 13.25V2.75C1 1.784 1.784 1 2.75 1Zm10.5 1.5H2.75a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V2.75a.25.25 0 0 0-.25-.25ZM8 4a.75.75 0 0 1 .75.75v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5A.75.75 0 0 1 8 4Z">
-                    </path>
-                </svg></a>
-            <a class="trash" href="{% url 'remove_from_cart' item.product.id %}">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
-                    <path
-                        d="M16 1.75V3h5.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H8V1.75C8 .784 8.784 0 9.75 0h4.5C15.216 0 16 .784 16 1.75Zm-6.5 0V3h5V1.75a.25.25 0 0 0-.25-.25h-4.5a.25.25 0 0 0-.25.25ZM4.997 6.178a.75.75 0 1 0-1.493.144L4.916 20.92a1.75 1.75 0 0 0 1.742 1.58h10.684a1.75 1.75 0 0 0 1.742-1.581l1.413-14.597a.75.75 0 0 0-1.494-.144l-1.412 14.596a.25.25 0 0 1-.249.226H6.658a.25.25 0 0 1-.249-.226L4.997 6.178Z">
-                    </path>
-                    <path
-                        d="M9.206 7.501a.75.75 0 0 1 .793.705l.5 8.5A.75.75 0 1 1 9 16.794l-.5-8.5a.75.75 0 0 1 .705-.793Zm6.293.793A.75.75 0 1 0 14 8.206l-.5 8.5a.75.75 0 0 0 1.498.088l.5-8.5Z">
-                    </path>
-                </svg>
-            </a><br>
+{% block content %}
+<section class="section">
+    <div class="section-shell">
+        <div class="section-heading">
+            <p class="eyebrow">Cart</p>
+            <h1>Your shopping cart</h1>
         </div>
-    </div>
-</div>
-{% endfor %}
-<div class="container"><hr class="mt-1 mb-4">
-<strong>Cart total cost: ${{ cart.get_total_cost }}</strong>
-<hr class="mt-4 mb-4">
-<a href="{% url 'checkout' %}" class="btn btn-success add-to-cart-button">Checkout</a>
-{% else %}
-<div class="container">
-    {% if user.is_authenticated %}
-    <h1 class="">Your cart is empty...</h1>
-    <p class="info-style-center">
-        Your Cart exists to fulfill its destiny! 
-        <br>Embark on a shopping adventure on the Lootseeker homepage, unveil hidden treasures with the latest offers.
-        <br>Let the shopping extravaganza commence!</p>
-        <div class="emptyCart">
-            <img src="/media/empt-cart.png">
-        </div>
-    {% else %}
-    <div>
-    <p class="info-style-center">
-        Gear up, brave explorer, for a thrilling quest awaits! Your digital Cart, a trusty companion on this epic journey, eagerly awaits your command.
-        <br>But only those who have unlocked the doors of the login realm can partake in the exhilarating pursuit of acquiring wondrous treasures from the enchanted lands of the web.
-        <br>With each step taken on the hallowed grounds of the Lootseeker homepage, you will unveil a myriad of hidden marvels, waiting to be discovered and cherished.
-        <br>So, fellow adventurer, muster your courage, embrace the excitement, and prepare to embark on a shopping extravaganza like no other.
-        <br>Set forth, with your loyal login credentials in hand or your heart set on creating them, and let the grand adventure begin!
-        <br><a aria-current="page" href="\login">log in</a> or <a aria-current="page" href="\signup">register now!</a>
-    </p>
-        <div class="container">
-            <img class="fullyCart" src="/media/cart-with-boxes.png">
-        </div>
-    </div>
-</div>
 
-    {% endif %}
-    {% endif %}
-</div>
+        {% if cart|length %}
+            <div class="cart-layout">
+                <div class="cart-items">
+                    {% for item in cart %}
+                        <article class="cart-item">
+                            <img src="{{ item.product.get_thumbnail }}" alt="Image of {{ item.product.title }}">
+                            <div>
+                                <h2>{{ item.product.title }}</h2>
+                                <p>${{ item.product.get_display_price }} each</p>
+                                <div class="quantity-controls" aria-label="Quantity controls">
+                                    <a href="{% url 'change_quantity' item.product.id %}?action=decrease"
+                                        aria-label="Decrease quantity">-</a>
+                                    <strong>{{ item.quantity }}</strong>
+                                    <a href="{% url 'change_quantity' item.product.id %}?action=increase"
+                                        aria-label="Increase quantity">+</a>
+                                    <a class="remove-link" href="{% url 'remove_from_cart' item.product.id %}">
+                                        Remove
+                                    </a>
+                                </div>
+                            </div>
+                            <strong class="cart-item__total">${{ item.total_price }}</strong>
+                        </article>
+                    {% endfor %}
+                </div>
+
+                <aside class="cart-summary">
+                    <p class="eyebrow">Order summary</p>
+                    <div>
+                        <span>Subtotal</span>
+                        <strong>${{ cart.get_total_cost }}</strong>
+                    </div>
+                    <p>Checkout runs as a portfolio-safe demo when Stripe keys are not configured.</p>
+                    <a href="{% url 'checkout' %}" class="button">Checkout</a>
+                    <a href="{% url 'frontpage' %}" class="button button-secondary">Continue shopping</a>
+                </aside>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                {% if user.is_authenticated %}
+                    <img src="/media/empt-cart.png" alt="Empty cart">
+                    <h2>Your cart is empty.</h2>
+                    <p>Browse the catalog and add products to start a checkout flow.</p>
+                {% else %}
+                    <img src="/media/cart-with-boxes.png" alt="Cart with boxes">
+                    <h2>Log in to turn browsing into checkout.</h2>
+                    <p>Create an account or log in to keep moving through the buying flow.</p>
+                    <div class="hero-actions">
+                        <a class="button" href="{% url 'login' %}">Log in</a>
+                        <a class="button button-secondary" href="{% url 'signup' %}">Sign up</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}
-
-
-

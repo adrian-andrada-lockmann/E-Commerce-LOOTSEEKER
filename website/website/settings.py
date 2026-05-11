@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,12 +22,12 @@ TEMPLATE_DIR = Path(BASE_DIR,'templates')
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l-o%@nmg8&qx-&jfkm%r=g1&u9vf5y)(1#@vgioqo@yxn%%eu^'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-lootseeker-dev-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.vercel.app']
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'myaccount'
@@ -44,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'bootstrap5',
     'userprofile',
     'store',
 ]
@@ -61,10 +61,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'website.urls'
 
-WEBSITE_URL = 'http://127.0.0.1:8000/'
+WEBSITE_URL = os.environ.get('WEBSITE_URL', 'http://127.0.0.1:8000/')
 
-STRIPE_PUB_KEY = 'pk_test_51NK83EKTZxz41xEvAT8AxcYdxUfiXSvnvf5Eoj2ViXDpBrGkJyTXIIJb0OmZRIjDHcA3IER4yoYk9iIbZFee5lYn00IU9W3REN'
-STRIPE_SECRET_KEY = 'sk_test_51NK83EKTZxz41xEvdCSgPDc0bXdFgfYE9kl8d7sWcgM55gRlQsAkE1w1Xt8oMYV4WKoPbuP9gqJtVHOTLuv7sjtD007ZB4ZGfR'
+STRIPE_PUB_KEY = os.environ.get('STRIPE_PUB_KEY', '')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
 
 TEMPLATES = [
     {
@@ -83,7 +83,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.wsgi.app'
+WSGI_APPLICATION = 'website.wsgi.application'
 
 
 # Database
@@ -131,11 +131,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = '/website/static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     BASE_DIR / "static",
-    'website/static',
 )
 
 MEDIA_URL = 'media/'

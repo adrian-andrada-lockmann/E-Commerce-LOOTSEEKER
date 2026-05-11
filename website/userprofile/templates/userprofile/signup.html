@@ -1,17 +1,19 @@
-{% extends 'core/base.html'%}{% block title %}Sign Up{% endblock %}
+{% extends 'core/base.html' %}
+{% block title %}Sign Up{% endblock %}
 
 {% block content %}
-    <h1>Sign Up</h1>
-    <div class="container">
-        <div class="form-group">
-            <form method="post" action="." enctype="multipart/form-data">
-                <table class="form-class-signup">
-        {% csrf_token %}
-
-        {{ form.as_table }}
-    </table>
-        <button class="btn btn-success" id="add-product" type="submit">Sign up</button>
-    </form>
+<section class="section">
+    <div class="auth-shell">
+        <div class="section-heading">
+            <p class="eyebrow">Create account</p>
+            <h1>Start using Lootseeker.</h1>
+            <p>Create a buyer account, then turn it into a seller profile when you are ready to publish products.</p>
+        </div>
+        <form method="post" action="." enctype="multipart/form-data" class="form-card">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="button" type="submit">Sign up</button>
+        </form>
     </div>
-    </div>
+</section>
 {% endblock %}

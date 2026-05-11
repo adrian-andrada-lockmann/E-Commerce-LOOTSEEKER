@@ -8,7 +8,7 @@ class Cart(object):
         cart = self.session.get(settings.CART_SESSION_ID)
         
         if not cart:
-            cart = self.session[settings.CART_SESSION_ID] = {}
+            cart = {}
             
         self.cart = cart
         
@@ -33,22 +33,25 @@ class Cart(object):
         self.session.modified = True
         
 
-    def add(self,product_id, quantity=1, update_quantity=False):
+    def add(self, product_id, quantity=1, update_quantity=False):
         product_id = str(product_id)
         
         if product_id not in self.cart:
             self.cart[product_id] = {'quantity': int(quantity), 'id': product_id}
+        elif not update_quantity:
+            self.cart[product_id]['quantity'] += int(quantity)
             
         if update_quantity:
             self.cart[product_id]['quantity'] += int(quantity)
-            if self.cart[product_id]['quantity'] == 0:
+            if self.cart[product_id]['quantity'] <= 0:
                 self.remove(product_id)
                 
         self.save()
 
     def clear(self):
-        del self.session[settings.CART_SESSION_ID]
-        self.session.modified = True
+        if settings.CART_SESSION_ID in self.session:
+            del self.session[settings.CART_SESSION_ID]
+            self.session.modified = True
 
     def get_total_cost(self):
         for p in self.cart.keys():
@@ -63,7 +66,9 @@ class Cart(object):
         return '{:.2f}'.format(total_cost)
     
     
-    def remove(self,product_id):
+    def remove(self, product_id):
+        product_id = str(product_id)
+
         if product_id in self.cart:
             del self.cart[product_id]
             self.save()

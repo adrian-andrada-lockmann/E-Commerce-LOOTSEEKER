@@ -1,11 +1,24 @@
-{% extends 'core/base.html'%}{% block title %}My Account{% endblock %}
+{% extends 'core/base.html' %}
+{% block title %}My Account{% endblock %}
 
 {% block content %}
-{% if request.user.is_authenticated %}
-<h1>My account</h1>
-<hr class="container">
-<div>
-<a href="{% url 'logout' %}" id="logout" class="btn btn-danger">Log out</a>
-</div>
-{% endif %}
+<section class="section">
+    <div class="section-shell account-panel">
+        {% if request.user.is_authenticated %}
+            <div>
+                <p class="eyebrow">Account</p>
+                <h1>Hi, {{ request.user.username }}.</h1>
+                <p>Manage your seller tools, cart, and session from here.</p>
+            </div>
+            <div class="account-actions">
+                <a class="button" href="{% url 'my_store' %}">My Store</a>
+                <a class="button button-secondary" href="{% url 'cart_view' %}">View cart</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="button button-danger" type="submit">Log out</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

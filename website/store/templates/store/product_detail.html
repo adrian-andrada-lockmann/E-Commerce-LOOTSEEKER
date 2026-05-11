@@ -1,24 +1,42 @@
-{% extends 'core/base.html'%}
-{% block title %}{{product.title}}{% endblock %}
+{% extends 'core/base.html' %}
+{% block title %}{{ product.title }}{% endblock %}
 
-{% block content%}
-<div class="container product-detail">
-{% if product.image %}
-    <div class="product-image">
-        <img src="{{ product.image.url }}" alt="Image of {{ product.title }}">
+{% block content %}
+<section class="section">
+    <div class="section-shell product-detail">
+        <div class="product-detail__media">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="Image of {{ product.title }}">
+            {% else %}
+                <img src="/media/notfound.png" alt="No product image available">
+            {% endif %}
+        </div>
+
+        <article class="product-detail__info">
+            <a class="product-card__category" href="{% url 'category_detail' product.category.slug %}">
+                {{ product.category }}
+            </a>
+            <h1>{{ product.title }}</h1>
+            <p class="product-detail__seller">
+                Published by
+                <a href="{% url 'vendor_detail' product.user.id %}">
+                    {% firstof product.user.get_full_name product.user.username %}
+                </a>
+            </p>
+            <p class="product-detail__price">${{ product.get_display_price }}</p>
+
+            <div class="product-detail__actions">
+                <a href="{% url 'add_to_cart' product.id %}" class="button">Add to cart</a>
+                <a href="{% url 'cart_view' %}" class="button button-secondary">View cart</a>
+            </div>
+
+            {% if product.description %}
+                <div class="product-detail__description">
+                    <h2>About this item</h2>
+                    <p>{{ product.description }}</p>
+                </div>
+            {% endif %}
+        </article>
     </div>
-{% endif %}
-    <div class="product-info">
-    <h4 class="product-title">{{product.title}}</h4>
-    <p class="product-owner">Published by: <a href="{% url 'vendor_detail' product.user.id %}"><strong>{% firstof product.user.get_full_name product.user.username %}</strong></a></p>
-    </p>
-    <hr class="container">
-{% if product.description %}
-    <p class="product-description"><strong>About this item:</strong><br>{{product.description}}</p>
-{% endif %}
-    <hr class="container">
-    <p class="product-price">${{product.get_display_price}}</p>
-    <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success add-to-cart-button">Add to cart</a>
-    </div>
-</div>
+</section>
 {% endblock %}

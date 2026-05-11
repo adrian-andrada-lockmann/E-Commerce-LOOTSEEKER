@@ -1,13 +1,20 @@
 import json
-import stripe
+import uuid
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from .models import Category, Product, Order, OrderItem
 from .cart import Cart
 from .forms import OrderForm
+
+try:
+    import stripe
+except ImportError:
+    stripe = None
 
 def add_to_cart(request, product_id):
     cart = Cart(request)
@@ -65,57 +72,63 @@ def checkout(request):
         city = data['city']
         
         if first_name and last_name and address and zipcode and city:
-            form = OrderForm(request.POST)
-
+            cart_items = list(cart)
+            line_items = []
             total_price = 0
-            items = []
 
-            for item in cart:
+            for item in cart_items:
                 product = item['product']
-                total_price += product.price * int(item['quantity'])
-
-            items.append({
-                'price_data':{
-                    'currency': 'usd',
-                    'product_data': {
-                        'name': product.title
+                quantity = int(item['quantity'])
+                total_price += product.price * quantity
+                line_items.append({
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': product.title
+                        },
+                        'unit_amount': product.price
                     },
-                    'unit_amount':  product.price
-                },
-                'quantity': item['quantity']
-            })
+                    'quantity': quantity
+                })
 
-            stripe.api_key = settings.STRIPE_SECRET_KEY
-            session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=items,
-            mode='payment',
-            success_url=f'{settings.WEBSITE_URL}cart/success',
-            cancel_url=f'{settings.WEBSITE_URL}cart/'
-            )
-            payment_intent = str(session.payment_intent)
+            use_stripe = stripe and settings.STRIPE_PUB_KEY and settings.STRIPE_SECRET_KEY
+            payment_intent = f'demo-{uuid.uuid4().hex}'
+
+            if use_stripe:
+                stripe.api_key = settings.STRIPE_SECRET_KEY
+                session = stripe.checkout.Session.create(
+                    payment_method_types=['card'],
+                    line_items=line_items,
+                    mode='payment',
+                    success_url=f'{settings.WEBSITE_URL}cart/success/',
+                    cancel_url=f'{settings.WEBSITE_URL}cart/'
+                )
+                payment_intent = str(session.payment_intent or session.id)
 
             order = Order.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            address=address,
-            zipcode=zipcode,
-            city=city,
-            created_by=request.user,
-            is_paid=True,
-            payment_intent=payment_intent,
-            paid_amount=total_price
+                first_name=first_name,
+                last_name=last_name,
+                address=address,
+                zipcode=zipcode,
+                city=city,
+                created_by=request.user,
+                is_paid=True,
+                payment_intent=payment_intent,
+                paid_amount=total_price
             )
 
-            for item in cart:
+            for item in cart_items:
                 product = item['product']
                 quantity = int(item['quantity'])
                 price = product.price * quantity
-
-            item = OrderItem.objects.create(order=order, product=product, price=price, quantity=quantity)
+                OrderItem.objects.create(order=order, product=product, price=price, quantity=quantity)
 
             cart.clear()
-            return JsonResponse({'session': session, 'order': payment_intent})
+
+            if use_stripe:
+                return JsonResponse({'provider': 'stripe', 'session_id': session.id})
+
+            return JsonResponse({'provider': 'demo', 'redirect_url': reverse('success'), 'order': order.id})
 
         
     else:

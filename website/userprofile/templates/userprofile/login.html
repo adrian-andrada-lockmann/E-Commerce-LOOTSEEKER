@@ -1,19 +1,26 @@
-{% extends 'core/base.html'%}{% block title %}Login{% endblock %}
+{% extends 'core/base.html' %}
+{% block title %}Login{% endblock %}
+
 {% block content %}
-{% if not request.user.is_authenticated %}
-    <h1>Login</h1>
-<div class="container">
-<div class="form-group">
-    <form method="POST" action="" class="login">
-        <table class="form-class-login">
-        {% csrf_token %}
-        {{ form.as_table }}
-        </table>
-        <button type="submit" class="btn btn-success" id="add-product">Login</button>
-    </form>
-</div>
-</div>
-{% else %}
-<p>You're already logged in.</p>
-{% endif %}
+<section class="section">
+    <div class="auth-shell">
+        {% if not request.user.is_authenticated %}
+            <div class="section-heading">
+                <p class="eyebrow">Account</p>
+                <h1>Welcome back.</h1>
+                <p>Log in to manage products, checkout, and continue using Lootseeker.</p>
+            </div>
+            <form method="POST" action="" class="form-card">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="button">Log in</button>
+            </form>
+        {% else %}
+            <div class="empty-state">
+                <h1>You are already logged in.</h1>
+                <a class="button" href="{% url 'myaccount' %}">Go to my account</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}
